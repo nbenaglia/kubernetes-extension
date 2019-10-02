@@ -157,6 +157,7 @@ we want a status subresource, so that we behave like built-in kubernetes types.
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:storageversion
 
 // CronJob is the Schema for the cronjobs API
 type CronJob struct {

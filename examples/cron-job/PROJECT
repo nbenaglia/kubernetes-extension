@@ -5,3 +5,6 @@ resources:
 - group: batch
   version: v1
   kind: CronJob
+- group: batch
+  version: v2
+  kind: CronJob

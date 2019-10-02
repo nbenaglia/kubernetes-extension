@@ -20,27 +20,22 @@ import (
 	"flag"
 	"os"
 
+	batchv1 "github.com/nbenaglia/kubernetes-extension/examples/cron-job/api/v1"
+	batchv2 "github.com/nbenaglia/kubernetes-extension/examples/cron-job/api/v2"
+	"github.com/nbenaglia/kubernetes-extension/examples/cron-job/controllers"
 	kbatchv1 "k8s.io/api/batch/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-	batchv1 "github.com/nbenaglia/kubernetes-extension/examples/cron-job/api/v1"
-	"github.com/nbenaglia/kubernetes-extension/examples/cron-job/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
 // +kubebuilder:docs-gen:collapse=Imports
 
 /*
-The first difference to notice is that kubebuilder has added the new API
-group's package (`batchv1`) to our scheme.  This means that we can use those
-objects in our controller.
-
-We'll also need to add the kubernetes batch v1 (`kbatchv1`) scheme, since we're creating
-and listing Jobs.
-*/
+ */
 var (
 	scheme   = runtime.NewScheme()
 	setupLog = ctrl.Log.WithName("setup")
@@ -51,15 +46,14 @@ func init() {
 
 	_ = kbatchv1.AddToScheme(scheme) // we've added this ourselves
 	_ = batchv1.AddToScheme(scheme)
+	_ = batchv2.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 
-/*
-The other thing that's changed is that kubebuilder has added a block calling our
-CronJob controller's `SetupWithManager` method.  Since we now use a `Scheme` as well,
-we'll need to pass that to the reconciler ourselves.
-*/
+// +kubebuilder:docs-gen:collapse=existing setup
 
+/*
+ */
 func main() {
 	/*
 	 */
@@ -81,7 +75,6 @@ func main() {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
-	// +kubebuilder:docs-gen:collapse=old stuff
 
 	if err = (&controllers.CronJobReconciler{
 		Client: mgr.GetClient(),
@@ -91,20 +84,14 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Captain")
 		os.Exit(1)
 	}
+	// +kubebuilder:docs-gen:collapse=existing setup
 
 	/*
-		We'll also set up webhooks for our type, which we'll talk about next.
-		We just need to add them to the manager.  Since we might want to run
-		the webhooks separately, or not run them when testing our controller
-		locally, we'll put them behind an environment variable.
-
-		We'll just make sure to set `ENABLE_WEBHOOKS=false` when we run locally.
+		Our existing call to SetupWebhookWithManager registers our conversion webhooks with the manager, too.
 	*/
-	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
-		if err = (&batchv1.CronJob{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Captain")
-			os.Exit(1)
-		}
+	if err = (&batchv1.CronJob{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "Captain")
+		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
 
@@ -116,5 +103,5 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
-	// +kubebuilder:docs-gen:collapse=old stuff
+	// +kubebuilder:docs-gen:collapse=existing setup
 }
