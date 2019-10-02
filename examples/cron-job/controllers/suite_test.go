@@ -22,8 +22,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	batchv1 "github.com/nbenaglia/kubernetes-extension/api/v1"
-	batchv2 "github.com/nbenaglia/kubernetes-extension/api/v2"
+	batchv1 "github.com/nbenaglia/kubernetes-extension/examples/cron-job/api/v1"
+	batchv2 "github.com/nbenaglia/kubernetes-extension/examples/cron-job/api/v2"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"

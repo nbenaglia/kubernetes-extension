@@ -11,6 +11,8 @@ spec:
     kind: CronJob
     plural: cronjobs
   scope: ""
+  subresources:
+    status: {}
   version: v1
   versions:
   - name: v1
@@ -4898,8 +4900,6 @@ spec:
         type: object
     served: true
     storage: true
-    subresources:
-      status: {}
   - name: v2
     schema:
       openAPIV3Schema:
